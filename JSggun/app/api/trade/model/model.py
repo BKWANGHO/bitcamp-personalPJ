@@ -9,7 +9,7 @@ class TradeModel :
     _fname : str = '' # file name
     _dname : str = '' # data path
     _sname : str = '' # sava path
-    _trade : object = None
+    _trade : pd.DataFrame = None
     _id : str = ''
     _label : str = ''
     
@@ -32,10 +32,10 @@ class TradeModel :
     def fname(self, fname: str): self._fname = fname
 
     @property
-    def trade(self) -> str: return self.trade
+    def trade(self) -> str: return self._trade
 
     @trade.setter
-    def trade(self, trade: pd.DataFrame): self.trade = trade
+    def trade(self, trade: pd.DataFrame): self._trade = trade
 
     @property
     def id(self) -> str: return self._id

@@ -19,10 +19,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-    
+service = TradeService()
+
 @app.post("/")
 async def trade():
-        service = TradeService()
+        
         stocks = ["005930","000660","000990","033640","093370",
                   "066570","010120","260870","118990","217820","035510"]
         service.start(stocks)
@@ -40,6 +41,12 @@ async def trade():
         신세계I&C : 035510
         '''
     
-
+@app.get("/trade")
+async def getTrade():
+    getTrade = service.get_trade()
+    print(getTrade)
+    
+    
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000)
+    

@@ -25,6 +25,8 @@ export default function Home() {
       method: "post",
       headers: {
         "Content-Type": "application/json",
+        // access token 
+        
       },
       body: JSON.stringify(data)
     })
@@ -33,7 +35,7 @@ export default function Home() {
       .catch((error) => console.log("error:", error));
   }
 
-
+  // 리액트 쿼리로 실시간 뿌려주기
 
   return (
     <div className="w-full h-full max-w-[1200px] mx-auto">

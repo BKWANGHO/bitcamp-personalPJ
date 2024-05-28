@@ -1,14 +1,17 @@
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname((os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))))
 
 
+from app.api.trade.service.trade_util import Reader
 from dotenv import load_dotenv
 import requests
 import json
-import datetime
+import datetime 
 import time
 import yaml
+import pandas as pd 
 
 from app.api.trade.model.model import TradeModel
 
@@ -24,6 +27,7 @@ class TradeService():
 
     def __init__(self):
         self.data = TradeModel()
+        self.util = Reader()
         self.data.sname = 'C:\\Users\\qorhk\\JSggun\\JSggun\\app\\api\\trade\\save\\'
         self.APP_KEY = os.environ['APP_KEY']
         self.APP_SECRET = os.environ['APP_SECRET']
@@ -32,8 +36,12 @@ class TradeService():
         self.DISCORD_WEBHOOK_URL = "https://hooks.slack.com/services/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"
         self.URL_BASE = "https://openapivts.koreainvestment.com:29443"
         self.ACCESS_TOKEN = ""
-        
-  
+        self.trade_columns = ['ord_dt','ord_gno_brno','odno','orgn_odno','ord_dvsn_name',
+                              'sll_buy_dvsn_cd','sll_buy_dvsn_cd_name','pdno','prdt_name',
+                              'ord_qty','ord_unpr','ord_tmd','tot_ccld_qty','avg_prvs','cncl_yn',
+                              'tot_ccld_amt','loan_dt','ord_dvsn_cd','cncl_cfrm_qty','rmn_qty',
+                              'rjct_qty','ccld_cndt_name','infm_tmd','ctac_tlno','prdt_type_cd',
+                              'excg_dvsn_cd']
         
     def send_message(self,msg):
         '''디스코드 메세지 전송'''
@@ -53,8 +61,8 @@ class TradeService():
         PATH = "oauth2/tokenP"
         URL = f"{self.URL_BASE}/{PATH}"
         res = requests.post(URL, headers=headers, data=json.dumps(body))
-        ACCESS_TOKEN = res.json()["access_token"]
-        return ACCESS_TOKEN
+        self.ACCESS_TOKEN = res.json()["access_token"]
+        return self.ACCESS_TOKEN
         
         
     def hashkey(self,datas):
@@ -177,9 +185,6 @@ class TradeService():
             "OVRS_ICLD_YN": "Y"
         }
         res = requests.get(URL, headers=headers, params=params)
-        # print('이건 확인 : ' , res)
-        # cash = res.json()['msg1']
-        # print('성공여부 : ',cash)
         cash = res.json()['output']['ord_psbl_cash']
         self.send_message(f"주문 가능 현금 잔고: {cash}원")
         return int(cash)
@@ -241,23 +246,52 @@ class TradeService():
         else:
             self.send_message(f"[매도 실패]{str(res.json())}")
             return False
-        
+    
+    def get_trade(self):
+        """금일 주문체결 조회 """
+        PATH = "uapi/domestic-stock/v1/trading/inquire-daily-ccld"
+        URL = f"{self.URL_BASE}/{PATH}"
+        headers = {"Content-Type":"application/json", 
+            "authorization":f"Bearer {self.ACCESS_TOKEN}",
+            "appKey":self.APP_KEY,
+            "appSecret":self.APP_SECRET,
+            "tr_id":"VTTC8001R",
+            "custtype":"P"
+        }
+        params = {
+            "CANO": self.CANO,
+            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
+            "INQR_STRT_DT": datetime.datetime.today().strftime("%Y%m%d"),
+            "INQR_END_DT": datetime.datetime.today().strftime("%Y%m%d"),
+            "SLL_BUY_DVSN_CD": "00",
+            "INQR_DVSN": "01",
+            "PDNO": "",
+            "CCLD_DVSN": "01",
+            "ORD_GNO_BRNO": "",
+            "ODNO": "",
+            "INQR_DVSN_3": "00",
+            "INQR_DVSN_1": "",
+            "CTX_AREA_FK100": "",
+            "CTX_AREA_NK100": "",
+        }
+        res = requests.get(URL, headers=headers, params=params)
+        return res.json()
         
     def start(self, symbol_list=[]):
-        print('시작?')
         try:
-            ACCESS_TOKEN = self.get_access_token()
-
+            self.ACCESS_TOKEN = self.get_access_token()
             bought_list = [] # 매수 완료된 종목 리스트
-            total_cash = self.get_balance() # 보유 현금 조회
-            stock_dict = self.get_stock_balance() # 보유 주식 조회
-            for sym in stock_dict.keys():
-                bought_list.append(sym)
-            target_buy_count = 3 # 매수할 종목 수
-            buy_percent = 0.33 # 종목당 매수 금액 비율
-            buy_amount = total_cash * buy_percent  # 종목별 주문 금액 계산
+            # total_cash = self.get_balance() # 보유 현금 조회
+            # stock_dict = self.get_stock_balance() # 보유 주식 조회
+            # for sym in stock_dict.keys():
+            #     bought_list.append(sym)
+                
+            target_buy_count = 10 # 매수할 종목 수
+            
+                        
+            buy_percent = 0.1 # 종목당 매수 금액 비율
+            # buy_amount = total_cash * buy_percent  # 종목별 주문 금액 계산
             soldout = False
-
             self.send_message("===국내 주식 자동매매 프로그램을 시작합니다===")
             while True:
                 t_now = datetime.datetime.now()
@@ -266,48 +300,55 @@ class TradeService():
                 t_sell = t_now.replace(hour=15, minute=15, second=0, microsecond=0)
                 t_exit = t_now.replace(hour=15, minute=20, second=0,microsecond=0)
                 today = datetime.datetime.today().weekday()
-                if today == 5 or today == 6:  # 토요일이나 일요일이면 자동 종료
-                    self.send_message("주말이므로 프로그램을 종료합니다.")
-                    break
-                if t_9 < t_now < t_start and soldout == False: # 잔여 수량 매도
-                    for sym, qty in stock_dict.items():
-                        self.sell(sym, qty)
-                    soldout == True
-                    bought_list = []
-                    stock_dict = self.get_stock_balance()
-                if t_start < t_now < t_sell :  # AM 09:05 ~ PM 03:15 : 매수
-                    for sym in symbol_list:
-                        if len(bought_list) < target_buy_count:
-                            if sym in bought_list:
-                                continue
-                            target_price = self.get_target_price(sym)
-                            current_price = self.get_current_price(sym)
-                            if target_price < current_price:
-                                buy_qty = 0  # 매수할 수량 초기화
-                                buy_qty = int(buy_amount // current_price)
-                                if buy_qty > 0:
-                                    self.send_message(f"{sym} 목표가 달성({target_price} < {current_price}) 매수를 시도합니다.")
-                                    result = self.buy(sym, buy_qty)
-                                    if result:
-                                        soldout = False
-                                        bought_list.append(sym)
-                                        self.get_stock_balance()
-                            time.sleep(1)
-                    time.sleep(1)
-                    if t_now.minute == 30 and t_now.second <= 5: 
-                        self.get_stock_balance()
-                        time.sleep(5)
-                if t_sell < t_now < t_exit:  # PM 03:15 ~ PM 03:20 : 일괄 매도
-                    if soldout == False:
-                        stock_dict = self.get_stock_balance()
-                        for sym, qty in stock_dict.items():
-                            self.sell(sym, qty)
-                        soldout = True
-                        bought_list = []
-                        time.sleep(1)
+                # if today == 5 or today == 6:  # 토요일이나 일요일이면 자동 종료
+                #     self.send_message("주말이므로 프로그램을 종료합니다.")
+                #     break
+                # if t_9 < t_now < t_start and soldout == False: # 잔여 수량 매도
+                #     for sym, qty in stock_dict.items():
+                #         self.sell(sym, qty)
+                #     soldout == True
+                #     bought_list = []
+                #     stock_dict = self.get_stock_balance()
+                # if t_start < t_now < t_sell :  # AM 09:05 ~ PM 03:15 : 매수
+                #     for sym in symbol_list:
+                #         if len(bought_list) < target_buy_count:
+                #             if sym in bought_list:
+                #                 continue
+                #             target_price = self.get_target_price(sym)
+                #             current_price = self.get_current_price(sym)
+                #             if target_price < current_price:
+                #                 buy_qty = 0  # 매수할 수량 초기화
+                #                 buy_qty = int(buy_amount // current_price)
+                #                 if buy_qty > 0:
+                #                     self.send_message(f"{sym} 목표가 달성({target_price} < {current_price}) 매수를 시도합니다.")
+                #                     result = self.buy(sym, buy_qty)
+                #                     if result:
+                #                         soldout = False
+                #                         bought_list.append(sym)
+                #                         self.get_stock_balance()
+                #             time.sleep(1)
+                    
+                #     if (t_now.minute == 30 or t_now.minute ==11) and t_now.second <= 5: 
+                #         self.get_stock_balance()
+                #         time.sleep(5)
+                    
+                # if t_sell < t_now < t_exit:  # PM 03:15 ~ PM 03:20 : 일괄 매도
+                #     if soldout == False:
+                #         stock_dict = self.get_stock_balance()
+                #         for sym, qty in stock_dict.items():
+                #             self.sell(sym, qty)
+                #         soldout = True
+                #         bought_list = []
+                #         time.sleep(1)
                 if t_exit < t_now:  # PM 03:20 ~ :프로그램 종료
                     self.send_message("프로그램을 종료합니다.")
+                    df = pd.json_normalize(self.get_trade()['output1'])
+                    print(df)
+                    
+                    df.to_csv(f'{self.data.sname}tradeDay.csv')
                     break
+
+            
         except Exception as e:
             self.send_message(f"[오류 발생]{e}")
             time.sleep(1)
@@ -315,10 +356,6 @@ class TradeService():
         
         
         
-if __name__ == "__main__":
-    ts = TradeService()
-    print('키 : ',ts.APP_KEY)
-    print('계좌 : ',ts.CANO)
-    print('계좌뒤2자리 : ',ts.ACNT_PRDT_CD)
-    print('시크릿 : ',ts.APP_SECRET)
-    print('URL : ',ts.URL_BASE)
+# if __name__ == "__main__":
+#     ts = TradeService()
+#     ts.start()
