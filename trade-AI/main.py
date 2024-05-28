@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
+from app.api.trade.repository.tradeRepository import TradeRepository
 from app.api.trade.service.trade_service import TradeService
 
 
@@ -20,7 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 service = TradeService()
-
 @app.post("/")
 async def trade():
         
