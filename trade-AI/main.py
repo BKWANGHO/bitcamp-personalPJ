@@ -1,11 +1,16 @@
 
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 from app.api.trade.repository.tradeRepository import TradeRepository
 from app.api.trade.service.trade_service import TradeService
+import requests
+import json
 
+class Item(BaseModel):
+    CANO: str
 
 app = FastAPI()
     
@@ -27,6 +32,7 @@ async def trade():
         stocks = ["005930","000660","000990","033640","093370",
                   "066570","010120","260870","118990","217820","035510"]
         service.start(stocks)
+        # print(CANO.value)
         '''
         삼성전자 : 005930
         sk하이닉스 : 000660

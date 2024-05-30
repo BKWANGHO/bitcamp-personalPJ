@@ -28,7 +28,7 @@ class TradeService():
 
     def __init__(self):
         self.data = TradeModel()
-        repo = TradeRepository()
+        self.repo = TradeRepository()
         self.util = Reader()
         self.data.sname = 'C:\\Users\\qorhk\\JSggun\\trade-AI\\app\\api\\trade\\save\\'
         self.APP_KEY = os.environ['APP_KEY']
@@ -125,7 +125,7 @@ class TradeService():
         stck_oprc = int(res.json()['output'][0]['stck_oprc']) #오늘 시가
         stck_hgpr = int(res.json()['output'][1]['stck_hgpr']) #전일 고가
         stck_lwpr = int(res.json()['output'][1]['stck_lwpr']) #전일 저가
-        target_price = stck_oprc + (stck_hgpr - stck_lwpr) * 0.5
+        target_price = stck_oprc + (stck_hgpr - stck_lwpr) * 0.03
         return target_price
 
 
@@ -276,7 +276,7 @@ class TradeService():
             "SLL_BUY_DVSN_CD": "00",
             "INQR_DVSN": "01",
             "PDNO": "",
-            "CCLD_DVSN": "01",
+            "CCLD_DVSN": "00",
             "ORD_GNO_BRNO": "",
             "ODNO": "",
             "INQR_DVSN_3": "00",
@@ -290,17 +290,17 @@ class TradeService():
     def start(self, symbol_list=[]):
         try:
             self.ACCESS_TOKEN = self.get_access_token()
-            # bought_list = [] # 매수 완료된 종목 리스트
-            # total_cash = self.get_balance() # 보유 현금 조회
-            # stock_dict = self.get_stock_balance() # 보유 주식 조회
-            # for sym in stock_dict.keys():
-            #     bought_list.append(sym)
+            bought_list = [] # 매수 완료된 종목 리스트
+            total_cash = self.get_balance() # 보유 현금 조회
+            stock_dict = self.get_stock_balance() # 보유 주식 조회
+            for sym in stock_dict.keys():
+                bought_list.append(sym)
                 
-            target_buy_count = 10 # 매수할 종목 수
+            target_buy_count = 3 # 매수할 종목 수
             
                         
-            buy_percent = 0.1 # 종목당 매수 금액 비율
-            # buy_amount = total_cash * buy_percent  # 종목별 주문 금액 계산
+            buy_percent = 0.333 # 종목당 매수 금액 비율
+            buy_amount = total_cash * buy_percent  # 종목별 주문 금액 계산
             soldout = False
             self.send_message("===국내 주식 자동매매 프로그램을 시작합니다===")
             while True:
@@ -308,57 +308,65 @@ class TradeService():
                 t_9 = t_now.replace(hour=9, minute=0, second=0, microsecond=0)
                 t_start = t_now.replace(hour=9, minute=5, second=0, microsecond=0)
                 t_sell = t_now.replace(hour=15, minute=15, second=0, microsecond=0)
-                # t_exit = t_now.replace(hour=15, minute=20, second=0,microsecond=0)
-                t_exit = t_now.replace(hour=00, minute=20, second=0,microsecond=0)
+                t_exit = t_now.replace(hour=15, minute=20, second=0,microsecond=0)
+                # t_exit = t_now.replace(hour=00, minute=20, second=0,microsecond=0)
                 today = datetime.datetime.today().weekday()
-            #     if today == 5 or today == 6:  # 토요일이나 일요일이면 자동 종료
-            #         self.send_message("주말이므로 프로그램을 종료합니다.")
-            #         break
-            #     if t_9 < t_now < t_start and soldout == False: # 잔여 수량 매도
-            #         for sym, qty in stock_dict.items():
-            #             self.sell(sym, qty)
-            #         soldout == True
-            #         bought_list = []
-            #         stock_dict = self.get_stock_balance()
-            #     if t_start < t_now < t_sell :  # AM 09:05 ~ PM 03:15 : 매수
-            #         for sym in symbol_list:
-            #             if len(bought_list) < target_buy_count:
-            #                 if sym in bought_list:
-            #                     continue
-            #                 target_price = self.get_target_price(sym)
-            #                 current_price = self.get_current_price(sym)
-            #                 if target_price < current_price:
-            #                     buy_qty = 0  # 매수할 수량 초기화
-            #                     buy_qty = int(buy_amount // current_price)
-            #                     if buy_qty > 0:
-            #                         self.send_message(f"{sym} 목표가 달성({target_price} < {current_price}) 매수를 시도합니다.")
-            #                         result = self.buy(sym, buy_qty)
-            #                         if result:
-            #                             soldout = False
-            #                             bought_list.append(sym)
-            #                             self.get_stock_balance()
-            #                 time.sleep(1)
+                if today == 5 or today == 6:  # 토요일이나 일요일이면 자동 종료
+                    self.send_message("주말이므로 프로그램을 종료합니다.")
+                    break
+                if t_9 < t_now < t_start and soldout == False: # 잔여 수량 매도
+                    for sym, qty in stock_dict.items():
+                        self.sell(sym, qty)
+                    soldout == True
+                    bought_list = []
+                    stock_dict = self.get_stock_balance()
+                if t_start < t_now < t_sell :  # AM 09:05 ~ PM 03:15 : 매수
+                    for sym in symbol_list:
+                        if len(bought_list) < target_buy_count:
+                            if sym in bought_list:
+                                continue
+                            target_price = self.get_target_price(sym)
+                            current_price = self.get_current_price(sym)
+                            if target_price < current_price:
+                                buy_qty = 0  # 매수할 수량 초기화
+                                buy_qty = int(buy_amount // current_price)
+                                if buy_qty > 0:
+                                    self.send_message(f"{sym} 목표가 달성({target_price} < {current_price}) 매수를 시도합니다.")
+                                    result = self.buy(sym, buy_qty)
+                                    if result:
+                                        soldout = False
+                                        bought_list.append(sym)
+                                        self.get_stock_balance()
+                                        df = pd.json_normalize(self.get_trade()['output1'])
+                                        df.drop(self.drop_columns,axis=1,inplace=True)
+                                        df.to_csv(f'{self.data.sname}tradeDay.csv',index=False)
+                                        self.send_message('csv 저장완료')
+                            time.sleep(1)
                     
-            #         if (t_now.minute == 30 or t_now.minute ==11) and t_now.second <= 5: 
-            #             self.get_stock_balance()
-            #             time.sleep(5)
                     
-            #     if t_sell < t_now < t_exit:  # PM 03:15 ~ PM 03:20 : 일괄 매도
-            #         if soldout == False:
-            #             stock_dict = self.get_stock_balance()
-            #             for sym, qty in stock_dict.items():
-            #                 self.sell(sym, qty)
-            #             soldout = True
-            #             bought_list = []
-            #             time.sleep(1)
+                    if (t_now.minute == 30 or t_now.minute ==11) and t_now.second <= 5: 
+                        self.get_stock_balance()
+                        time.sleep(5)
+                    
+                if t_sell < t_now < t_exit:  # PM 03:15 ~ PM 03:20 : 일괄 매도
+                    if soldout == False:
+                        stock_dict = self.get_stock_balance()
+                        for sym, qty in stock_dict.items():
+                            self.sell(sym, qty)
+                        soldout = True
+                        bought_list = []
+                        time.sleep(1)
                 if t_exit < t_now:  # PM 03:20 ~ :프로그램 종료
                     self.send_message("프로그램을 종료합니다.")
-                    print(self.get_trade())
+                    # print(self.get_trade())
                     df = pd.json_normalize(self.get_trade()['output1'])
+                    print(df)
                     df.drop(self.drop_columns,axis=1,inplace=True)
-                    print(df.head())
                     df.to_csv(f'{self.data.sname}tradeDay.csv',index=False)
-                    return df
+                    print('csv 저장완료')
+                    self.repo.save(df)
+                    # print(df.head())
+                    # return df
                     break
 
         except Exception as e:

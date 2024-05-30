@@ -13,15 +13,15 @@ class Reader():
     def __init__(self):
         pass
 
-    def createDF(self, data):
+    def createDF(self, data) ->pd.DataFrame:
         return pd.DataFrame(data,index=None)
     
-    def csv(self,file) -> object:
+    def csv(self,file) -> pd.DataFrame:
         return pd.read_csv(f'{file}',encoding='UTF-8', thousands=',')
     
-    def xls(self,file,header,usecols) -> object:
+    def xls(self,file,header,usecols) -> pd.DataFrame:
         return pd.read_csv(f'{file}', header=header, usecols=usecols)
 
-    def json(self,file) -> object:
+    def json(self,file) -> pd.DataFrame:
         return json.load(open(f'{file}.json',encoding='UTF-8'))
     

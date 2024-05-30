@@ -1,4 +1,5 @@
 import pymysql
+import pandas as pd
 
 
 
@@ -16,18 +17,13 @@ class TradeRepository():
         self.cur = self.conn.cursor()
         
         
-    def createTable(self):
-        print('ghkrdls')
-        q = "INSERT INTO users(id,address, job,name,password,username) values(%s,%s,%s,%s,%s,%s)"
-        v = (2,"서울","백수","bae","1234","bbbbb")
-        qu = "CREATE TABLE trades()"
-        a = self.cur.execute(q,v)
-        print(a)
-        # self.cur.execute("CREATE TABLE trades()")
+    def save(self,dataFrame:pd.DataFrame):
+        query = "INSERT INTO trades(ord_dt,ord_gno_brno,odno,ord_dvsn_name,sll_buy_dvsn_cd,sll_buy_dvsn_cd_name,pdno,prdt_name,ord_qty,ord_tmd,tot_ccld_qty,avg_prvs,tot_ccld_amt,ord_dvsn_cd) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        value = (dataFrame['ord_dt'],dataFrame['ord_gno_brno'],dataFrame['odno'],dataFrame['ord_dvsn_name'],dataFrame['sll_buy_dvsn_cd'],
+                 dataFrame['sll_buy_dvsn_cd_name'],dataFrame['pdno'],dataFrame['prdt_name'],dataFrame['ord_qty'],dataFrame['ord_tmd'],
+                 dataFrame['tot_ccld_qty'],dataFrame['avg_prvs'],dataFrame['tot_ccld_amt'],dataFrame['ord_dvsn_cd'])
+        save = self.cur.execute(query,value)
+        print(save)
         self.conn.commit()
         self.conn.close()
-        
-    def save(self):
-        
-        pass
         
