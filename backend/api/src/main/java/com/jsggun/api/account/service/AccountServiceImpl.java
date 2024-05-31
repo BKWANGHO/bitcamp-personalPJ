@@ -8,6 +8,7 @@ import com.jsggun.api.common.service.UtilService;
 import com.jsggun.api.user.model.User;
 import com.jsggun.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,13 +23,16 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository repository;
     private final UserRepository userRepository;
     private final UtilService util;
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public Messenger save(AccountDto accountDto) {
         User user = userRepository.findById(accountDto.getUser()).orElseThrow();
+        String encodePassword = passwordEncoder.encode(accountDto.getAcpw());
         var account = repository.save(Account.builder()
                 .id(accountDto.getId())
                 .acno(util.createRandomInteger(10000000,99999999)+"-01")
-                .acpw(accountDto.getAcpw())
+                .acpw(encodePassword)
                 .balance(0)
                 .bank(accountDto.getBank())
                 .acType(accountDto.getAcType())

@@ -34,6 +34,7 @@ function Header() {
   const getuser = useSelector(getUserById)
   
   useEffect(()=>{
+    console.log(getuser);
     if(parseCookies().accessToken){
       setShowProfile(true)
     }else{
@@ -73,7 +74,7 @@ function Header() {
           </button>
           {showProfile &&
           <div className="flex px-4 py-3 float-end">
-            <Link href={`${PG.USER}/detail/${jwtDecode<any>(parseCookies()?.accessToken).userId}`}><span className="block text-sm text-gray-900 dark:text-white">{getuser.name}</span></Link>
+            <Link href={`${PG.USER}/detail/${jwtDecode<any>(parseCookies()?.accessToken)?.userId}`}><span className="block text-sm text-gray-900 dark:text-white">{getuser.name}</span></Link>
             <span className="block text-sm  text-gray-500 truncate dark:text-gray-400 mx-5">{getuser.username}</span>
             <span className="block text-sm  text-gray-500 truncate dark:text-gray-400" onClick={logoutHandler}> <a href="#">log out</a> </span>
           </div>

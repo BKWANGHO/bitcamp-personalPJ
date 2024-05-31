@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { tradeCountAPI, deleteTradeAPI, findAllTradesAPI, findTradeByIdAPI, modifyTradeAPI, saveTradeAPI } from "./trade.api";
+import { tradeCountAPI, deleteTradeAPI, findAllTradesAPI, findTradeByIdAPI, modifyTradeAPI, saveTradeAPI, findTradesBypdNameAPI } from "./trade.api";
 import { ITrade } from "../model/trade";
 
 export const findAllTrades : any = createAsyncThunk(
@@ -10,6 +10,13 @@ export const findAllTrades : any = createAsyncThunk(
     return data
 })
 
+export const findTradesBypdName : any = createAsyncThunk(
+    'trades/findTradesBypdName',
+     async (prdtName:string)=>{
+    const data:any = await findTradesBypdNameAPI(prdtName);
+    console.log('t서비스'+prdtName)
+    return data
+})
 
 export const findTradeById : any = createAsyncThunk(
     'trades/findTradeById',

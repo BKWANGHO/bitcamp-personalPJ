@@ -1,6 +1,7 @@
 package com.jsggun.api.trade.model;
 
 import com.jsggun.api.account.model.Account;
+import com.querydsl.core.annotations.QueryProjection;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -15,11 +16,11 @@ import java.util.ArrayList;
 
 @Component
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Builder
 @Log4j2
 public class TradeDto {
+
 
     private Long id;
     private String ordDt;             //주문일
@@ -39,5 +40,30 @@ public class TradeDto {
     private String regDate;
     private String modDate;
     private Long account;
+
+    @QueryProjection
+    public TradeDto(Long id, String ordDt, String ordGnoBrno, String odno, String ordDvsnName,
+                    String sllBuyDvsnCd, String sllBuyDvsnCdName, String pdno, String prdtName,
+                    String ordTmd, String ordQty, String totCcldQty, String avgPrvs, String totCcldAmt,
+                    String ordDvsnCd, String regDate, String modDate, Long account) {
+        this.id = id;
+        this.ordDt = ordDt;
+        this.ordGnoBrno = ordGnoBrno;
+        this.odno = odno;
+        this.ordDvsnName = ordDvsnName;
+        this.sllBuyDvsnCd = sllBuyDvsnCd;
+        this.sllBuyDvsnCdName = sllBuyDvsnCdName;
+        this.pdno = pdno;
+        this.prdtName = prdtName;
+        this.ordTmd = ordTmd;
+        this.ordQty = ordQty;
+        this.totCcldQty = totCcldQty;
+        this.avgPrvs = avgPrvs;
+        this.totCcldAmt = totCcldAmt;
+        this.ordDvsnCd = ordDvsnCd;
+        this.regDate = regDate;
+        this.modDate = modDate;
+        this.account = account;
+    }
 
 }

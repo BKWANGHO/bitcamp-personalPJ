@@ -28,6 +28,8 @@ return instance
     (config) => {
         config.headers["Content-Type"] = "application/json"
         config.headers["Authorization"] = `Bearer ${parseCookies().accessToken}`
+        config.headers["Access-Control-Allow-Origin"] = '*'
+        
         return config
     }, (error) => {
         console.log("AXIOS 인터셉터 에러 발생 : " + error)

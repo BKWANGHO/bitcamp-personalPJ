@@ -7,6 +7,7 @@ import com.jsggun.api.common.service.CommandService;
 import com.jsggun.api.common.service.QueryService;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface TradeService extends CommandService<TradeDto>, QueryService<TradeDto> {
@@ -58,4 +59,6 @@ public interface TradeService extends CommandService<TradeDto>, QueryService<Tra
 
 
     List<TradeDto> findByAcno(Long acno);
+
+    List<TradeDto> findByProductNo(String pdno);
 }

@@ -7,11 +7,20 @@ export const findAllTradesAPI = async (id:number)=>{
     const response = await instance().get('/trades/list',{
         params:{id}
     })
+    
     return response.data
     }catch(error){
     console.log(error)
     }}
-
+    
+    export const findTradesBypdNameAPI = async (prdtName:string)=>{
+        try{
+            const response = await instance().get('/trades/search',{params:{prdtName}})
+            console.log('ghkrdlsAPI'+prdtName)
+        return response.data
+        }catch(error){
+        console.log(error)
+        }}
 
 export const findTradeByIdAPI = async (id:number)=>{
     try{

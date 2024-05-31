@@ -21,6 +21,7 @@ export default function tradesColums(): GridColDef[] {
     return [
         {
         flex: 0.04,
+        headerAlign: 'center',
         minWidth: 30,
         sortable: false,
         field: 'id',
@@ -29,70 +30,59 @@ export default function tradesColums(): GridColDef[] {
     },
     {
         flex: 0.04,
+        headerAlign: 'center',
         minWidth: 30,
         sortable: false,
-        field: 'title',
-        headerName: '제목',
-        renderCell : ({row}:CellType) => MyTypography(<Link href={`${PG.TRADE}/detail/${row.id}`}>{row.title}</Link>,"1rem")  
+        field: 'day',
+        headerName: '거래일',
+        renderCell : ({row}:CellType) => MyTypography(row.ordDt,"1rem")  
+    }, 
+     {
+        flex: 0.04,
+        headerAlign: 'center',
+        minWidth: 30,
+        sortable: false,
+        field: 'time',
+        headerName: '거래시각',
+        renderCell : ({row}:CellType) => MyTypography(row.ordTmd,"1rem")  
     },
     {
         flex: 0.04,
+        headerAlign: 'center',
         minWidth: 30,
         sortable: false,
-        field: 'content',
-        headerName: '내용',
-        renderCell : ({row}:CellType) => MyTypography(row.content,"1rem")
+        field: 'productName',
+        headerName: '상품명',
+        renderCell : ({row}:CellType) => MyTypography(<Link href={`https://m.stock.naver.com/domestic/stock/${row.pdno}/total`}>{row.prdtName}</Link>,"1rem")
     },
     {
         flex: 0.04,
+        headerAlign: 'center',
         minWidth: 30,
         sortable: false,
-        field: 'writer',
-        headerName: '작성자',
-        renderCell : ({row}:CellType) => MyTypography(row.writer,"1rem")
+        field: 'Qty',
+        headerName: '주문수량',
+        renderCell : ({row}:CellType) => MyTypography(row.ordQty,"1rem")
         
     },
     {
         flex: 0.04,
+        headerAlign: 'center',
         minWidth: 30,
         sortable: false,
-        field: 'board',
-        headerName: '게시판',
-        renderCell : ({row}:CellType) => MyTypography(row.board,"1rem")
+        field: 'prvs',
+        headerName: '체결가',
+        renderCell : ({row}:CellType) => MyTypography(row.avgPrvs,"1rem")
     },
     {
         flex: 0.04,
+        headerAlign: 'center',
         minWidth: 30,
         sortable: false,
-        field: 'regDate',
-        headerName: '생성일',
-        renderCell : ({row}:CellType) => MyTypography(row.regDate,"1rem")
+        field: 'totPrvs',
+        headerName: '총체결가',
+        renderCell : ({row}:CellType) => MyTypography(row.totCcldAmt,"1rem")
     },
-    {
-        flex: 0.04,
-        minWidth: 30,
-        sortable: false,
-        field: 'modDate',
-        headerName: '수정일',
-        renderCell : ({row}:CellType) => MyTypography(row.modDate,"1rem")
-    },
-    {
-        flex: 0.04,
-        minWidth: 30,
-        sortable: false,
-        field: 'delete',
-        headerName: '삭제',
-        renderCell : ({row}:CellType) => <button onClick={()=>{
-        let flag = confirm('게시글 삭제하까?')
-        if(flag){
-            dispatch(deleteTrade(row.id))
-            location.reload()
-        }else{
-            
-        }
-        }}>
-            {MyTypography("삭제","1rem")}</button>
-    }
 
 
 ]

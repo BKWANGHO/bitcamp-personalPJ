@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public interface TradeRepository extends JpaRepository<Trade,Long> {
+public interface TradeRepository extends JpaRepository<Trade,Long>, TradeDao{
 
 
     List<Trade> findByAccount(Account account);

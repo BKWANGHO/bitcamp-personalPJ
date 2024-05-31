@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -56,8 +57,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 //                    .map(i->repository.existsById(i))
 //                    .findFirst()
 //                    .isPresent();
-
-            return Stream.of(request)
+            return CorsUtils.isPreFlightRequest(request) ? true:
+            Stream.of(request)
                     .map(i->jwtProvider.extractTokenFromHeader(i))
                     .filter(i->!i.equals("undefined"))
                     .peek(i->log.info("1- 인터셉터 토큰 확인 : {}",i))

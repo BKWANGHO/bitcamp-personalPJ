@@ -1,7 +1,7 @@
 "use client"; 
 
 import { createSlice } from "@reduxjs/toolkit";
-import { findAllTrades, findTradeById, saveTrade, tradeCount } from "./trade.service";
+import { findAllTrades, findTradeById, findTradesBypdName, saveTrade, tradeCount } from "./trade.service";
 import { ITrade } from "../model/trade";
 
 
@@ -49,7 +49,8 @@ export const tradeSlice = createSlice({
         .addCase(findAllTrades.fulfilled, (state :any, {payload}:any) => {state.array = payload}) 
         .addCase(findTradeById.fulfilled, (state :any, {payload}:any) => {state.json = payload}) 
         .addCase(tradeCount.fulfilled, (state :any, {payload}:any) => {state.count = payload}) 
-    
+        .addCase(findTradesBypdName.fulfilled, (state :any, {payload}:any) => {state.array = payload}) 
+        
         
     }  
 })

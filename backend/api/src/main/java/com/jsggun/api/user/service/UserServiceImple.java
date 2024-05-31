@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Payload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -26,11 +27,20 @@ public class UserServiceImple implements UserService {
     private final UserRepository repository;
 
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Messenger save(UserDto userDto) {
+        String encodePassword = passwordEncoder.encode(userDto.getPassword());
 
-        var user = repository.save(dtoToEntity(userDto));
+        var user = repository.save(User.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .password(encodePassword)
+                .name(userDto.getName())
+                .phone(userDto.getPhone())
+                .job(userDto.getJob())
+                .build());
 
         return Messenger.builder()
                 .message(user instanceof User ? "SUCCESS":"FAIURE")
@@ -123,7 +133,9 @@ public class UserServiceImple implements UserService {
         log.info("로그인 서비스 확인 : "+userDto);
         var user = repository.findByUsername(userDto.getUsername()).get();
 
-        var flag = user.getPassword().equals(userDto.getPassword());
+//        var flag = user.getPassword().equals(userDto.getPassword());
+        var flag = passwordEncoder.matches(userDto.getPassword() , user.getPassword());
+
 
         var accessToken = jwtProvider.createToken(entityToDto(user));
 

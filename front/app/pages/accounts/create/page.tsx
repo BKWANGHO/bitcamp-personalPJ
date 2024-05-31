@@ -29,7 +29,7 @@ export default function Join() {
             .then((res: any) => {
                 console.log(res.payload)
                 if (res.payload.message === 'SUCCESS') {
-                    router.push(`${PG.ACCOUNT}/list`)
+                    // router.push(`${PG.ACCOUNT}/list`)
                 }
             })
     }

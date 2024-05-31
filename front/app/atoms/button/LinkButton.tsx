@@ -27,7 +27,7 @@ export const pages = [
     // { id: 2, title: '로그인', path: '/' },
     { id: 3, title: '계좌생성', path: `${PG.ACCOUNT}/create` },
     { id: 4, title: '계좌목록', path: `${PG.ACCOUNT}/list` },
-    { id: 5, title: '거래내역', path: `${PG.TRADE}/list` },
+    // { id: 5, title: '거래내역', path: `${PG.TRADE}/list` },
     // { id: 6, title: '마이페이지', path: `${PG.USER}/detail/${parseCookies()?.accessToken ?  jwtDecode<any>(parseCookies()?.accessToken).userId : 0 }` }
 ]
 

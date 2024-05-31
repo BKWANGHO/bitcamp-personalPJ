@@ -1,15 +1,21 @@
-import { ITrade } from "../model/trade";
+import { ITrade } from "../model/trade"
 
 
 export const initialState:ITrade={
-    id: 0,
-    title: '',
-    content: '',
-    writer: '',
-    board : 0,
-    regDate : '',
-    modDate : '',
-    array: [],
-    json: {}
-
+    id: 0 ,
+    ordDt:'',         
+    ordGnoBrno:'',       
+    odno:'',      
+    ordDvsnName:'',     
+    sllBuyDvsnCd:'',    
+    sllBuyDvsnCdName:'',  
+    pdno:'', 
+    prdtName:'',
+    ordTmd:'',
+    ordQty:'',
+    totCcldQty:'',
+    avgPrvs:'',
+    totCcldAmt:'',
+    ordDvsnCd:'',
+    account:0
 }
