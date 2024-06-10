@@ -7,10 +7,10 @@ class TradeRepository():
     
     def __init__(self):
 
-        self.MYSQL_HOSTNAME = 'localhost' # you probably don't need to change this
-        self.MYSQL_USER = 'root'
-        self.MYSQL_PASSWORD = 'password'
-        self.MYSQL_DATABASE = 'turingdb'
+        self.MYSQL_HOSTNAME = '192.168.0.2' # you probably don't need to change this
+        self.MYSQL_USER = 'ggun'
+        self.MYSQL_PASSWORD = 'ggunggun'
+        self.MYSQL_DATABASE = 'ggundb'
 
         self.connection_string = f'mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOSTNAME}/{self.MYSQL_DATABASE}'
 

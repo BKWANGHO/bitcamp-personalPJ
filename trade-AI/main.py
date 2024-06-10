@@ -4,13 +4,9 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
+import yaml
 from app.api.trade.repository.tradeRepository import TradeRepository
 from app.api.trade.service.trade_service import TradeService
-import requests
-import json
-
-class Item(BaseModel):
-    CANO: str
 
 app = FastAPI()
     
@@ -26,13 +22,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 service = TradeService()
-@app.post("/")
-async def trade():
-        
-        stocks = ["005930","000660","000990","033640","093370",
+
+stocks = ["005930","000660","000990","033640","093370",
                   "066570","010120","260870","118990","217820","035510"]
-        service.start(stocks)
-        # print(CANO.value)
+
+with open('config.yaml', encoding='UTF-8') as f:
+    cfg = yaml.load(f, Loader=yaml.FullLoader)
+
+url = cfg['URL_BASE']
+
+
+@app.get("/JIN")
+async def tradeJin():
+        key_JIN = cfg['APP_KEY_JIN']
+        secret_JIN = cfg['APP_SECRET_JIN']
+        cano_JIN = cfg['CANO_JIN']
+        print("Jin 시작")
+        service.start(key_JIN,secret_JIN,cano_JIN,url,2,stocks)
+        
+@app.get("/SOO")
+async def tradeSoo():
+        key_SOO = cfg['APP_KEY_SOO']
+        secret_SOO = cfg['APP_SECRET_SOO']
+        cano_SOO = cfg['CANO_SOO']
+        print("Soo 시작")
+        service.start(key_SOO,secret_SOO,cano_SOO,url,3,stocks)
+
+@app.get("/HO")
+async def tradeHo():
+        key_HO = cfg['APP_KEY_HO']
+        secret_HO = cfg['APP_SECRET_HO']
+        cano_HO = cfg['CANO_HO']
+        print("HO 시작")
+        service.start(key_HO,secret_HO,cano_HO,url,1,stocks)
+        
         '''
         삼성전자 : 005930
         sk하이닉스 : 000660
@@ -47,10 +70,6 @@ async def trade():
         신세계I&C : 035510
         '''
     
-@app.get("/trade")
-async def getTrade():
-    getTrade = service.get_trade()
-    print(getTrade)
     
     
 if __name__ == "__main__":

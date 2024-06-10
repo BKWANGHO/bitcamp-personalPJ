@@ -35,18 +35,21 @@ export default function TradeHistory({ params }: any) {
       })
   }, [])
 
-  const pySubmit = (e: any) => {
-    fetch('http://localhost:8000/', {
-      method: "POST",
+  const hoSubmit = async (e: any) => {
+    fetch('http://localhost:8000/JIN', {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
-        // access token 
       },
-      // body: JSON.stringify(watch("acno"))
     })
-      // .then((response) => response.json())
-      // .then((data) => setMessage(data.answer))
-      // .catch((error) => console.log("error:", error));
+  }
+  const sooSubmit = async (e: any) => {
+    fetch('http://localhost:8000/SOO', {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
   }
 
   const onSubmit = (data:any) => {
@@ -61,11 +64,16 @@ export default function TradeHistory({ params }: any) {
 
         <input type="hidden" value={"계좌번호확인"} />
         {/* // {...register('CANO', { required: true })} readOnly /> */}
+        <div className='flex'>
         <div className="text-black-400 flex-center text-[32px] font-normal font-['Newsreader'] my-[48px] w-full">
-          <button onClick={pySubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
-           text-white text-2xl font-['Inter']" type='button' >시 작</button>
+          <button onClick={hoSubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
+           text-white text-2xl font-['Inter']" type='button' >HO</button>
         </div>
-
+        <div className="text-black-400 flex-center text-[32px] font-normal font-['Newsreader'] my-[48px] w-full">
+          <button onClick={sooSubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
+           text-white text-2xl font-['Inter']" type='button' >SOO</button>
+        </div>
+        </div>
         <div className="w-full bg-stone-50 rounded-3xl border-2
          border-neutral-200 p-[48px] h-auto"  >
           <div className="text-center text-black-500 text-[30px] font-bold font-['Inter'] mb-[15px]">자동 거래내역 검색</div>

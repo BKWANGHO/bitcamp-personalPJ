@@ -35,64 +35,63 @@ class KisApi():
         '''디스코드 메세지 전송'''
         now = datetime.datetime.now()
         message = {"content": f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] {str(msg)}"}
-        requests.post(self.DISCORD_WEBHOOK_URL, data=message)
+        # requests.post(self.DISCORD_WEBHOOK_URL, data=message)
         print(message)
         return message
 
 
-    def get_access_token(self):
+    def get_access_token(self,key,secret,url):
         """토큰 발급"""
         headers = {"content-type":"application/json"}
         body = {"grant_type":"client_credentials",
-        "appkey":self.APP_KEY, 
-        "appsecret":self.APP_SECRET}
+        "appkey":key, 
+        "appsecret":secret}
         PATH = "oauth2/tokenP"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         res = requests.post(URL, headers=headers, data=json.dumps(body))
-        self.ACCESS_TOKEN = res.json()["access_token"]
-        return self.ACCESS_TOKEN
+        ACCESS_TOKEN = res.json()["access_token"]
+        return ACCESS_TOKEN        
         
-        
-    def hashkey(self,datas):
+    def hashkey(self,datas,key,secret,url):
         """암호화"""
         PATH = "uapi/hashkey"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {
         'content-Type' : 'application/json',
-        'appKey' : self.APP_KEY,
-        'appSecret' : self.APP_SECRET,
+        'appKey' : key,
+        'appSecret' : secret,
         }
         res = requests.post(URL, headers=headers, data=json.dumps(datas))
         hashkey = res.json()["HASH"]
         return hashkey
 
 
-    def get_current_price(self,code):
+    def get_current_price(self,code,key,secret,url,token):
         """현재가 조회"""
         PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {self.ACCESS_TOKEN}",
-                "appKey":self.APP_KEY,
-                "appSecret":self.APP_SECRET,
+                "authorization": f"Bearer {token}",
+                "appKey":key,
+                "appSecret":secret,
                 "tr_id":"FHKST01010100"}
         params = {
         "fid_cond_mrkt_div_code":"J",
         "fid_input_iscd":code,
         }
         res = requests.get(URL, headers=headers, params=params)
-        return int(res.json()['output']['stck_prpr'])
+        return int(res.json()['output']['stck_prpr'])   # 주식 현재가 리턴 
 
 
-    def get_target_price(self,code):
+    def get_target_price(self,code,key,secret,url,token):
         """변동성 돌파 전략으로 매수 목표가 조회"""
         PATH = "uapi/domestic-stock/v1/quotations/inquire-daily-price"
         
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization": f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"FHKST01010400"}
         params = {
         "fid_cond_mrkt_div_code":"J",
@@ -108,20 +107,20 @@ class KisApi():
         return target_price
 
 
-    def get_stock_balance(self):
+    def get_stock_balance(self,key,secret,url,token,cano):
         """주식 잔고조회"""
         PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization":f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"VTTC8434R",
             "custtype":"P",
         }
         params = {
-            "CANO": self.CANO,
-            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
+            "CANO": cano,
+            "ACNT_PRDT_CD": "01", #ACNT_PRDT_CD
             "AFHR_FLPR_YN": "N",
             "OFL_YN": "",
             "INQR_DVSN": "02",
@@ -152,20 +151,20 @@ class KisApi():
         return stock_dict
 
 
-    def get_balance(self):
+    def get_balance(self,key,secret,url,token,cano):
         """현금 잔고조회"""
         PATH = "uapi/domestic-stock/v1/trading/inquire-psbl-order"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization":f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"VTTC8908R",
             "custtype":"P"
         }
         params = {
-            "CANO": self.CANO,
-            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
+            "CANO": cano,
+            "ACNT_PRDT_CD": "01",
             "PDNO": "005930",
             "ORD_UNPR": "55000",
             "ORD_DVSN": "01",
@@ -178,25 +177,25 @@ class KisApi():
         return int(cash)
         
 
-    def buy(self,code="005930", qty="1"):
+    def buy(self,key,secret,url,token,cano,code="005930", qty="1"):
         """주식 시장가 매수"""  
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         data = {
-            "CANO": self.CANO,
-            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
+            "CANO": cano,
+            "ACNT_PRDT_CD": "01",
             "PDNO": code,
             "ORD_DVSN": "01",
             "ORD_QTY": str(int(qty)),
             "ORD_UNPR": "0",
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization":f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"VTTC0802U",
             "custtype":"P",
-            "hashkey" : self.hashkey(data)
+            "hashkey" : self.hashkey(data,key,secret,url)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
         if res.json()['rt_cd'] == '0':
@@ -207,25 +206,25 @@ class KisApi():
             return False
 
 
-    def sell(self, code="005930", qty="1"):
+    def sell(self,key,secret,url,token,cano,code="005930", qty="1"):
         """주식 시장가 매도"""
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         data = {
-            "CANO": self.CANO,
-            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
+            "CANO": cano,
+            "ACNT_PRDT_CD": "01",
             "PDNO": code,
             "ORD_DVSN": "01",
             "ORD_QTY": qty,
             "ORD_UNPR": "0",
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization":f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"VTTC0801U",
             "custtype":"P",
-            "hashkey" : self.hashkey(data)
+            "hashkey" : self.hashkey(data,key,secret,url)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
         if res.json()['rt_cd'] == '0':
@@ -235,23 +234,21 @@ class KisApi():
             self.send_message(f"[매도 실패]{str(res.json())}")
             return False
     
-    def get_trade(self):
+    def get_trade(self,key,secret,url,token,cano):
         """금일 주문체결 조회 """
         PATH = "uapi/domestic-stock/v1/trading/inquire-daily-ccld"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization":f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"VTTC8001R",
             "custtype":"P"
         }
         params = {
-            "CANO": self.CANO,
-            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
-            # "INQR_STRT_DT": datetime.datetime.today().strftime("%Y%m%d"),
-            "INQR_STRT_DT": "20240527",
-            # "INQR_STRT_DT": datetime.datetime.today().strftime("%Y%m%d"),
+            "CANO": cano,
+            "ACNT_PRDT_CD": "01",
+            "INQR_STRT_DT": datetime.datetime.today().strftime("%Y%m%d"),
             "INQR_END_DT": datetime.datetime.today().strftime("%Y%m%d"),
             "SLL_BUY_DVSN_CD": "00",
             "INQR_DVSN": "01",
@@ -267,20 +264,20 @@ class KisApi():
         res = requests.get(URL, headers=headers, params=params)
         return res.json()
     
-    def get_trade2(self,nkkey):
+    def get_trade2(self,nkkey,key,secret,url,token,cano):
         """금일 주문체결 조회 """
         PATH = "uapi/domestic-stock/v1/trading/inquire-daily-ccld"
-        URL = f"{self.URL_BASE}/{PATH}"
+        URL = f"{url}/{PATH}"
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {self.ACCESS_TOKEN}",
-            "appKey":self.APP_KEY,
-            "appSecret":self.APP_SECRET,
+            "authorization":f"Bearer {token}",
+            "appKey":key,
+            "appSecret":secret,
             "tr_id":"VTTC8001R",
             "custtype":"P"
         }
         params = {
-            "CANO": self.CANO,
-            "ACNT_PRDT_CD": self.ACNT_PRDT_CD,
+            "CANO": cano,
+            "ACNT_PRDT_CD": "01",
             "INQR_STRT_DT": "20240527",
             # "INQR_STRT_DT": datetime.datetime.today().strftime("%Y%m%d"),
             "INQR_END_DT": datetime.datetime.today().strftime("%Y%m%d"),

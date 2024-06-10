@@ -58,7 +58,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 //                    .findFirst()
 //                    .isPresent();
             return CorsUtils.isPreFlightRequest(request) ? true:
-            Stream.of(request)
+                    Stream.of(request)
                     .map(i->jwtProvider.extractTokenFromHeader(i))
                     .filter(i->!i.equals("undefined"))
                     .peek(i->log.info("1- 인터셉터 토큰 확인 : {}",i))
