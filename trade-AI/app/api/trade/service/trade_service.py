@@ -140,9 +140,9 @@ class TradeService():
                     df = pd.json_normalize(self.api.get_trade(key,secret,url,ACCESS_TOKEN,cano)['output1'])
                     df.drop(self.drop_columns,axis=1,inplace=True)
                     df['account_id'] = accountId
+                    df['trade_type'] = "AI"
                     print(df)
-                    # df.to_csv(f'{self.data.sname}{datetime.datetime.today().strftime("%Y%m%d")}거래내역.csv',index=False)
-                    df.to_csv(f'{self.data.sname}{datetime.datetime.today().strftime("%Y%m%d")}거래내역.csv',index=False)
+                    df.to_csv(f'{self.data.sname}{datetime.datetime.today().strftime("%Y%m%d")}계좌{accountId}거래내역.csv',index=False)
                     print('csv 저장완료')
                     self.repo.save(df)
                     break

@@ -1,5 +1,6 @@
 
 
+import threading
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import uvicorn
@@ -37,24 +38,23 @@ async def tradeJin():
         key_JIN = cfg['APP_KEY_JIN']
         secret_JIN = cfg['APP_SECRET_JIN']
         cano_JIN = cfg['CANO_JIN']
-        print("Jin 시작")
-        service.start(key_JIN,secret_JIN,cano_JIN,url,2,stocks)
         
-@app.get("/SOO")
-async def tradeSoo():
         key_SOO = cfg['APP_KEY_SOO']
         secret_SOO = cfg['APP_SECRET_SOO']
         cano_SOO = cfg['CANO_SOO']
-        print("Soo 시작")
-        service.start(key_SOO,secret_SOO,cano_SOO,url,3,stocks)
-
-@app.get("/HO")
-async def tradeHo():
+        
         key_HO = cfg['APP_KEY_HO']
         secret_HO = cfg['APP_SECRET_HO']
         cano_HO = cfg['CANO_HO']
-        print("HO 시작")
-        service.start(key_HO,secret_HO,cano_HO,url,1,stocks)
+        
+        
+        thread_1 = threading.Thread(target = service.start(key_JIN,secret_JIN,cano_JIN,url,2,stocks))
+        thread_2 = threading.Thread(target = service.start(key_SOO,secret_SOO,cano_SOO,url,3,stocks))
+        thread_3 = threading.Thread(target = service.start(key_HO,secret_HO,cano_HO,url,1,stocks))
+        
+        thread_1.start()
+        thread_2.start()
+        thread_3.start()
         
         '''
         삼성전자 : 005930

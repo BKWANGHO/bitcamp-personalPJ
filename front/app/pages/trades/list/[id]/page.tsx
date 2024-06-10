@@ -35,16 +35,8 @@ export default function TradeHistory({ params }: any) {
       })
   }, [])
 
-  const hoSubmit = async (e: any) => {
-    fetch('http://localhost:8000/JIN', {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-  }
-  const sooSubmit = async (e: any) => {
-    fetch('http://localhost:8000/SOO', {
+  const tradeSubmit = async (e: any) => {
+    fetch('http://localhost:8000/', {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -64,15 +56,9 @@ export default function TradeHistory({ params }: any) {
 
         <input type="hidden" value={"계좌번호확인"} />
         {/* // {...register('CANO', { required: true })} readOnly /> */}
-        <div className='flex'>
         <div className="text-black-400 flex-center text-[32px] font-normal font-['Newsreader'] my-[48px] w-full">
-          <button onClick={hoSubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
+          <button onClick={tradeSubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
            text-white text-2xl font-['Inter']" type='button' >HO</button>
-        </div>
-        <div className="text-black-400 flex-center text-[32px] font-normal font-['Newsreader'] my-[48px] w-full">
-          <button onClick={sooSubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
-           text-white text-2xl font-['Inter']" type='button' >SOO</button>
-        </div>
         </div>
         <div className="w-full bg-stone-50 rounded-3xl border-2
          border-neutral-200 p-[48px] h-auto"  >
