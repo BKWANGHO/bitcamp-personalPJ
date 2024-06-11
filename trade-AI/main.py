@@ -33,7 +33,7 @@ with open('config.yaml', encoding='UTF-8') as f:
 url = cfg['URL_BASE']
 
 
-@app.get("/JIN")
+@app.get("/")
 async def tradeJin():
         key_JIN = cfg['APP_KEY_JIN']
         secret_JIN = cfg['APP_SECRET_JIN']
@@ -47,14 +47,32 @@ async def tradeJin():
         secret_HO = cfg['APP_SECRET_HO']
         cano_HO = cfg['CANO_HO']
         
+        key_JU = cfg['APP_KEY_JU']
+        secret_JU = cfg['APP_SECRET_JU']
+        cano_JU = cfg['CANO_JU']
         
-        thread_1 = threading.Thread(target = service.start(key_JIN,secret_JIN,cano_JIN,url,2,stocks))
-        thread_2 = threading.Thread(target = service.start(key_SOO,secret_SOO,cano_SOO,url,3,stocks))
-        thread_3 = threading.Thread(target = service.start(key_HO,secret_HO,cano_HO,url,1,stocks))
+        key_HOJU = cfg['APP_KEY_HOJU']
+        secret_HOJU = cfg['APP_SECRET_HOJU']
+        cano_HOJU = cfg['CANO_HOJU']
+        
+        key_HOHYUN = cfg['APP_KEY_HOHYUN']
+        secret_HOHYUN = cfg['APP_SECRET_HOHYUN']
+        cano_HOHYUN = cfg['CANO_HOHYUN']
+        
+        
+        thread_1 = threading.Thread(target = service.start, args=(key_JIN,secret_JIN,cano_JIN,url,2,0.1,stocks))
+        thread_2 = threading.Thread(target = service.start, args=(key_SOO,secret_SOO,cano_SOO,url,3,0.05,stocks))
+        thread_3 = threading.Thread(target = service.start, args=(key_HO,secret_HO,cano_HO,url,1,0.1,stocks))
+        thread_4 = threading.Thread(target = service.start, args=(key_JU,secret_JU,cano_JU,url,4,0.01,stocks))
+        thread_5 = threading.Thread(target = service.start, args=(key_HOJU,secret_HOJU,cano_HOJU,url,5,0.3,stocks))
+        thread_6 = threading.Thread(target = service.start, args=(key_HOHYUN,secret_HOHYUN,cano_HOHYUN,url,6,0.2,stocks))
         
         thread_1.start()
         thread_2.start()
         thread_3.start()
+        thread_4.start()
+        thread_5.start()
+        thread_6.start()
         
         '''
         삼성전자 : 005930

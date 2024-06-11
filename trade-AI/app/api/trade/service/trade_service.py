@@ -51,7 +51,7 @@ class TradeService():
         
     
         
-    def start(self,key,secret,cano,url,accountId,symbol_list=[]):
+    def start(self,key,secret,cano,url,accountId,target_incr_price,symbol_list=[]):
         try:
             ACCESS_TOKEN = self.api.get_access_token(key,secret,url)
             bought_list = [] # 매수 완료된 종목 리스트
@@ -72,12 +72,12 @@ class TradeService():
                 t_start = t_now.replace(hour=9, minute=5, second=0, microsecond=0)
                 t_sell = t_now.replace(hour=15, minute=10, second=0, microsecond=0)
                 t_exit = t_now.replace(hour=15, minute=20, second=0,microsecond=0)
+                t_test = t_now.replace(hour=21, minute=27, second=0,microsecond=0)
                 today = datetime.datetime.today().weekday()
             
              
                 if today == 5 or today == 6:  # 토요일이나 일요일이면 자동 종료
                     self.api.send_message("주말이므로 프로그램을 종료합니다.")
-                    target_price = self.api.get_target_price(sym,key,secret,url,ACCESS_TOKEN)
                     break
                 
                 
@@ -94,7 +94,7 @@ class TradeService():
                         if len(bought_list) < target_buy_count:
                             if sym in bought_list:
                                 continue
-                            target_price = self.api.get_target_price(sym,key,secret,url,ACCESS_TOKEN)
+                            target_price = self.api.get_target_price(sym,key,secret,url,ACCESS_TOKEN,target_incr_price)
                             current_price = self.api.get_current_price(sym,key,secret,url,ACCESS_TOKEN)
                             if target_price < current_price:
                                 buy_qty = 0  # 매수할 수량 초기화
@@ -109,8 +109,8 @@ class TradeService():
                                         df = pd.json_normalize(self.api.get_trade(key,secret,url,ACCESS_TOKEN,cano)['output1'])
                                         df.drop(self.drop_columns,axis=1,inplace=True)
                                         df['account_id'] = accountId
-                                        df['trade_type'] = "AI"
-                                        df.to_csv(f'{self.data.sname}tradeDay.csv',index=False)
+                                        df['trade_type'] = "ai"
+                                        df.to_csv(f'{self.data.sname}{datetime.datetime.today().strftime("%Y%m%d")}계좌{accountId}거래내역.csv',index=False)
                             time.sleep(1)
                     
                     
@@ -136,11 +136,10 @@ class TradeService():
                         
                 if t_exit < t_now:  # PM 03:20 ~ :프로그램 종료
                     self.api.send_message("프로그램을 종료합니다.")
-                    # print(self.get_trade())
                     df = pd.json_normalize(self.api.get_trade(key,secret,url,ACCESS_TOKEN,cano)['output1'])
                     df.drop(self.drop_columns,axis=1,inplace=True)
                     df['account_id'] = accountId
-                    df['trade_type'] = "AI"
+                    df['trade_type'] = "ai"
                     print(df)
                     df.to_csv(f'{self.data.sname}{datetime.datetime.today().strftime("%Y%m%d")}계좌{accountId}거래내역.csv',index=False)
                     print('csv 저장완료')

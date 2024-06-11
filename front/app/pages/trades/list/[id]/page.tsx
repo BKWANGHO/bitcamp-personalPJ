@@ -58,7 +58,7 @@ export default function TradeHistory({ params }: any) {
         {/* // {...register('CANO', { required: true })} readOnly /> */}
         <div className="text-black-400 flex-center text-[32px] font-normal font-['Newsreader'] my-[48px] w-full">
           <button onClick={tradeSubmit} className="h-[72px] w-[127px] bg-violet-500 rounded-lg  text-center ml-[16px]
-           text-white text-2xl font-['Inter']" type='button' >HO</button>
+           text-white text-2xl font-['Inter']" type='button' >Start!</button>
         </div>
         <div className="w-full bg-stone-50 rounded-3xl border-2
          border-neutral-200 p-[48px] h-auto"  >

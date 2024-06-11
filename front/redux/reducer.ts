@@ -1,6 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import countReducer from "@/app/components/counter/service/counter-slice";
 import tradeReducer from "@/app/components/trade/service/trade.slice";
 import accountReducer from "@/app/components/account/service/account-slice";
 import userReducer from "@/app/components/users/service/user-slice";
@@ -47,13 +46,11 @@ const accountPersistConfig = {
 };
 
 
-const persistedCountReducer = persistReducer(countPersistConfig, countReducer);
 const persistedTradeReducer = persistReducer(tradePersistConfig, tradeReducer);
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedaccountReducer = persistReducer(accountPersistConfig, accountReducer);
 
 export const rootReducer = combineReducers({
-  count: persistedCountReducer,
   trade: persistedTradeReducer,
   user: persistedUserReducer,
   account: persistedaccountReducer

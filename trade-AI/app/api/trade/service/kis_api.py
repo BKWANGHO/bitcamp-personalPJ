@@ -83,7 +83,7 @@ class KisApi():
         return int(res.json()['output']['stck_prpr'])   # 주식 현재가 리턴 
 
 
-    def get_target_price(self,code,key,secret,url,token):
+    def get_target_price(self,code,key,secret,url,token,target_incr_price):
         """변동성 돌파 전략으로 매수 목표가 조회"""
         PATH = "uapi/domestic-stock/v1/quotations/inquire-daily-price"
         
@@ -103,7 +103,7 @@ class KisApi():
         stck_oprc = int(res.json()['output'][0]['stck_oprc']) #오늘 시가
         stck_hgpr = int(res.json()['output'][1]['stck_hgpr']) #전일 고가
         stck_lwpr = int(res.json()['output'][1]['stck_lwpr']) #전일 저가
-        target_price = stck_oprc + (stck_hgpr - stck_lwpr) * 0.03
+        target_price = stck_oprc + (stck_hgpr - stck_lwpr) * target_incr_price
         return target_price
 
 
