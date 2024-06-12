@@ -2,9 +2,7 @@ spring:
   application:
     name: api
   datasource:
-#    url: jdbc:mysql://http://192.168.0.2/:3306/ggundb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    url: jdbc:mysql://QuickConnect.to/ggun:5000:3306/ggundb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-#    url: jdbc:mysql://localhost:3306/turingdb
+    url: jdbc:mysql://192.168.0.2:3306/ggundb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ggun
     password: ggunggun
     driver-class-name: com.mysql.cj.jdbc.Driver

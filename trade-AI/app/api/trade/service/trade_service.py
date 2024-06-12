@@ -51,7 +51,7 @@ class TradeService():
         
     
         
-    def start(self,key,secret,cano,url,accountId,target_incr_price,symbol_list=[]):
+    def start(self,key,secret,cano,url,accountId,target_incr_price,sell_ratio,symbol_list=[]):
         try:
             ACCESS_TOKEN = self.api.get_access_token(key,secret,url)
             bought_list = [] # 매수 완료된 종목 리스트
@@ -60,9 +60,9 @@ class TradeService():
             for sym in stock_dict.keys():
                 bought_list.append(sym)
                 
-            target_buy_count = 3 # 매수할 종목 수
+            target_buy_count = 10 # 매수할 종목 수
             
-            buy_percent = 0.333 # 종목당 매수 금액 비율
+            buy_percent = 0.1 # 종목당 매수 금액 비율
             buy_amount = total_cash * buy_percent  # 종목별 주문 금액 계산
             soldout = False
             self.api.send_message("===국내 주식 자동매매 프로그램을 시작합니다===")
@@ -112,8 +112,20 @@ class TradeService():
                                         df['trade_type'] = "ai"
                                         df.to_csv(f'{self.data.sname}{datetime.datetime.today().strftime("%Y%m%d")}계좌{accountId}거래내역.csv',index=False)
                             time.sleep(1)
-                    
-                    
+
+                        # if len(bought_list) > 0:
+                        #     if sym in bought_list:
+                        #         continue
+                        #     sell_target_price = int(df['avg_prvs']) * sell_ratio
+                        #     current_price = self.api.get_current_price(sym,key,secret,url,ACCESS_TOKEN)
+                        #     if sell_target_price < current_price:
+                        #         sell_qty = df['tot_ccld_qty']
+                        #         if sell_qty > 0:
+                        #             self.api.send_message(f"{sym} 목표가 달성({sell_target_price} < {current_price}) 매도를 시도합니다.")
+                        #             result = self.api.sell(key,secret,url,ACCESS_TOKEN,cano,sym,sell_qty)
+                        #     time.sleep(1)
+                            
+                            
                     if (t_now.minute//10==0 or t_now.minute==35) and t_now.second <= 5: 
                         self.api.get_stock_balance(key,secret,url,ACCESS_TOKEN,cano)
                         # df = pd.json_normalize(self.api.get_trade(self.APP_KEY1,self.APP_SECRET1,self.URL_BASE,ACCESS_TOKEN,self.CANO1)['output1'])
@@ -124,14 +136,14 @@ class TradeService():
                         # print('csv 저장완료')
                         time.sleep(5)
                     
-                if t_sell < t_now < t_exit:  # PM 03:15 ~ PM 03:20 : 일괄 매도
-                    if soldout == False:
-                        stock_dict = self.api.get_stock_balance(key,secret,url,ACCESS_TOKEN,cano)
-                        for sym, qty in stock_dict.items():
-                            self.api.sell(key,secret,url,ACCESS_TOKEN,cano,sym, qty)
-                        soldout = True
-                        bought_list = []
-                        time.sleep(1)
+                # if t_sell < t_now < t_exit:  # PM 03:15 ~ PM 03:20 : 일괄 매도
+                #     if soldout == False:
+                #         stock_dict = self.api.get_stock_balance(key,secret,url,ACCESS_TOKEN,cano)
+                #         for sym, qty in stock_dict.items():
+                #             self.api.sell(key,secret,url,ACCESS_TOKEN,cano,sym, qty)
+                #         soldout = True
+                #         bought_list = []
+                #         time.sleep(1)
                         
                         
                 if t_exit < t_now:  # PM 03:20 ~ :프로그램 종료

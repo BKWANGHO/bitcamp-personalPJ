@@ -25,7 +25,7 @@ app.add_middleware(
 service = TradeService()
 
 stocks = ["005930","000660","000990","033640","093370",
-                  "066570","010120","260870","118990","217820","035510"]
+                  "066570","010120","053610","118990","217820","035510"]
 
 with open('config.yaml', encoding='UTF-8') as f:
     cfg = yaml.load(f, Loader=yaml.FullLoader)
@@ -59,6 +59,13 @@ async def tradeJin():
         secret_HOHYUN = cfg['APP_SECRET_HOHYUN']
         cano_HOHYUN = cfg['CANO_HOHYUN']
         
+        key_GEONWOO = cfg['APP_KEY_GEONWOO']
+        secret_GEONWOO = cfg['APP_SECRET_GEONWOO']
+        cano_GEONWOO = cfg['CANO_GEONWOO']
+        
+        key_TAEHO = cfg['APP_KEY_TAEHO']
+        secret_TAEHO = cfg['APP_SECRET_TAEHO']
+        cano_TAEHO = cfg['CANO_TAEHO']
         
         thread_1 = threading.Thread(target = service.start, args=(key_JIN,secret_JIN,cano_JIN,url,2,0.1,stocks))
         thread_2 = threading.Thread(target = service.start, args=(key_SOO,secret_SOO,cano_SOO,url,3,0.05,stocks))
@@ -66,6 +73,8 @@ async def tradeJin():
         thread_4 = threading.Thread(target = service.start, args=(key_JU,secret_JU,cano_JU,url,4,0.01,stocks))
         thread_5 = threading.Thread(target = service.start, args=(key_HOJU,secret_HOJU,cano_HOJU,url,5,0.3,stocks))
         thread_6 = threading.Thread(target = service.start, args=(key_HOHYUN,secret_HOHYUN,cano_HOHYUN,url,6,0.2,stocks))
+        thread_7 = threading.Thread(target = service.start, args=(key_GEONWOO,secret_GEONWOO,cano_GEONWOO,url,7,0.15,stocks))
+        thread_8 = threading.Thread(target = service.start, args=(key_TAEHO,secret_TAEHO,cano_TAEHO,url,8,0.25,stocks))
         
         thread_1.start()
         thread_2.start()
@@ -73,6 +82,8 @@ async def tradeJin():
         thread_4.start()
         thread_5.start()
         thread_6.start()
+        thread_7.start()
+        thread_8.start()
         
         '''
         삼성전자 : 005930
@@ -82,10 +93,11 @@ async def tradeJin():
         후성 : 093370
         LG전자 : 066570
         LS일렉트릭 : 010120
-        SK시그넷 : 260870
+        SK시그넷 : 260870  //모의투자 매매불가 종목
         모트렉스 : 118990
         원익피앤이 : 217820
         신세계I&C : 035510
+        프로텍 : 053610
         '''
     
     

@@ -141,6 +141,10 @@ class KisApi():
                 stock_dict[stock['pdno']] = stock['hldg_qty']
                 self.send_message(f"{stock['prdt_name']}({stock['pdno']}): {stock['hldg_qty']}주")
                 time.sleep(0.1)
+                self.send_message(f"{stock['prdt_name']}({stock['pdno']}): 매입가 {stock['pchs_amt']}원")
+                time.sleep(0.1)
+                self.send_message(f"{stock['prdt_name']}({stock['pdno']}): 현재가 {stock['prpr']}원")
+                time.sleep(0.1)
         self.send_message(f"주식 평가 금액: {evaluation[0]['scts_evlu_amt']}원")
         time.sleep(0.1)
         self.send_message(f"평가 손익 합계: {evaluation[0]['evlu_pfls_smtl_amt']}원")
